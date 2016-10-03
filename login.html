@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>KINGPLE</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="main+page.css"	>
+</head>
+
+<body>
+    <header>
+    <h1>KINGPLE</h1>
+    </header>
+
+	<section id="join">
+		<div class="banner">
+			<image src="http://img.etoday.co.kr/pto_db/2014/10/20141030021933_531281_541_300.jpg">
+		</div>
+		
+		<form method="post" action="login.php">	
+			<div class="content">
+				<ul>
+					<li>
+						<label for="userId" class="user">아이디</label>
+						<input type="text" id="userId" name="userId" autofocus required>
+					</li>
+					<li>
+						<label for="userPassword" class="user">비밀번호</label>
+						<input type="password" id="userPassword" name="userPassword" required>
+					</li>
+				</ul>
+			</div>
+		
+			<div class= "login_btn">
+					<button type="submit">로그인</button>
+					<button type="button" onclick="location='join.html'">회원가입</button>
+			</div>
+		</form>
+			
+		
+	</section>
+	
+	<footer>
+		<p>ⓒ Team-Kingple</p>
+	</footer>
+</body>
+</html>

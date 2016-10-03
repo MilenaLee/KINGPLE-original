@@ -1,0 +1,82 @@
+<!DOCTYPE php>
+<?php
+session_start();
+
+$id=$_SESSION["sessionId"];
+$connect = mysqli_connect('54.65.221.83','root','1234','project') or die('Error connecting to MySQL server');
+    // $sql = "select * from message where send_id='$id' order by date_time desc";
+    // $result = mysqli_query($connect,$sql) or die ('Error querying database1');
+
+$tablename="messsage";
+if($page_send== " ") $page_send=1;
+if($page_rcv== " ") $page_rcv=1;
+$list_num = 10; // 한 페이지에 10개의 메시지
+$page_num = 5; // 5개의 페이지 목록 보여주기
+$offset=$list_num*($page-1);
+
+
+$query_send="select * from message where send_id='$id' ORDER BY date_time DESC";
+$query_rcv="select * from message where rcv_id='$id' ORDER BY date_time DESC ";
+
+$result_send = mysqli_query($connect,$query_send) or die ('Error querying database2');
+$result_rcv = mysqli_query($connect,$query_rcv) or die ('Error querying database2');
+
+$test1="select count(*) from message where send_id='$id'";
+$test2="select count(*) from message where rcv_id='$id'";
+$result_count_send=mysqli_query($connect,$test1);//총 메시지 수 구하기
+$result_count_rcv=mysqli_query($connect,$test2);
+
+$row_count_send = mysqli_fetch_row($result_count_send);
+$total_row_send=$row_count_send['0'];//총 보낸 메시지 수 구하기
+$row_count_rcv = mysqli_fetch_row($result_count_rcv);
+$total_row_rcv=$row_count_rcv['0'];//총 받은 메시지 수 구하기
+
+//총 페이지 수 계산
+if($total_row_send <=0) $total_row_send=0;
+if($total_row_rcv <=0) $total_row_rcv=0;
+$total_page_send=ceil($total_row_send/$list_num);//총 페이지
+$total_page_rcv=ceil($total_row_rcv/$list_num);
+
+
+//현재 페이지 계산
+//no 변수는 0부터 시작해서 +1을 해줌
+$cur_num_send=ceil(($no+1)/$list_num);
+$cur_num_rcv=ceil(($no+1)/$list_num);
+
+
+$messageID = $_GET[id];
+
+?>
+
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>킹플 쪽지</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <?php include("\login_ing.php"); ?>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+
+</head>
+
+<body>
+
+    <div id="div3" >
+        <form method="post" name="send_message" action="message.php">
+            <h2>쪽지보내기</h2>
+            <ul>
+                <li>
+                    <label for="receivedId">To</label>
+                    <input type="text" name="receivedId" required="required" value = "<?php echo $messageID; ?>">
+                </li>
+                <li>
+                    <textarea name="message_content" cols="30" rows="10" placeholder="내용을 입력하세요."></textarea>
+                </li>
+                <button type="submit">쪽지보내기</button>
+            </form>
+        </div>
+
+     <script src="checkAll.js"></script>
+</body>
+</html>

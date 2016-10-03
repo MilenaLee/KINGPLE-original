@@ -1,0 +1,170 @@
+<?php
+    session_start();
+    
+    $year = $_GET[year];
+    $month = $_GET[month];
+    $day = $_GET[day];
+    $projectNum = $_GET[projectNum];
+    
+    $date="$year"."-"."$month"."-"."$day";
+    $connect = mysqli_connect('54.65.221.83', 'root', '1234', 'project');
+?>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>월별 일정</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta http-equiv="refresh" content="6000; url=logout.php"> 
+    
+    <?php include("\login_ing.php"); ?>
+
+</head>
+
+<body>
+    <header>
+        <h1><?php echo "$year"."년 "."$month"."월 "."$day"."일의 일정"; ?></h1>
+    </header>
+
+    <section>
+        <form method = "post" name= "project_Mschd" action="month_schd.php">
+                <fieldset>
+                    <legend>추가된 일정</legend>
+                    <ul>
+                        <p>팀플명 : <?php 
+                            $sql="select projectName from projectAdd where num='$projectNum'";
+                            $result= mysqli_query($connect,$sql) or die ('Error querying database'); 
+                            $result=mysqli_fetch_array($result);
+                            echo $result['projectName']; ?>
+
+                            <?php 
+                            $sql2="select * from monthtable where date='$date' and projectnum='$projectNum'";
+                            $result2= mysqli_query($connect,$sql2) or die ('Error querying database2'); 
+
+                            if(mysqli_num_rows($result2)==0)
+                            { echo "<br/>\n<br/>\n"."일정이 없습니다"; }
+                            else
+                            {
+                                while($row2= mysqli_fetch_array($result2)){ ?>
+
+                            <p>시간 : 
+                                <?php
+
+                                $hour = floor($row2['startTime']/100);
+                                $minute = $row2['startTime'] - $hour*100;
+                                if($minute == 0)
+                                {
+                                    $minute = '00';
+                                } 
+                                echo "$hour".":"."$minute"."~";
+                                
+                                $hour = floor($row2['endTime']/100);
+                                $minute = $row2['endTime'] - $hour*100;
+                                
+                                if($minute == 0)
+                                {
+                                    $minute = '00';
+                                }
+                                echo "$hour".":"."$minute";
+                                ?>
+
+                            <p>일정 내용 : <?php echo $row2['content'];?>
+
+                                <?php } 
+                                 mysqli_close($connect);
+                            }?>
+
+
+
+                    </ul>
+                </fieldset>
+                <fieldset>
+                    <legend>일정 추가하기</legend>
+                    <ul>
+                        <form id="add" method = "post" action="month_schd.php">
+                        <input type ="hidden" name ="year" value = <?=$year?>>
+                        <input type ="hidden" name ="month" value = <?=$month?>>
+                        <input type ="hidden" name ="day" value = <?=$day?>>
+                        <input type ="hidden" name="num" value=<?=$num?>>
+                        <input type ="hidden" name="projectNum" value=<?=$projectNum?>>
+
+                        <label for="Time">시간</label>
+                        <select name="time1">
+                            <option value="09" selected>오전09시</option>
+                            <option value="10">오전10시</option>
+                            <option value="11">오전11시</option>
+                            <option value="12">오전12시</option>
+                            <option value="13">오후01시</option>
+                            <option value="14">오후02시</option>
+                            <option value="15">오후03시</option>
+                            <option value="16">오후04시</option>
+                            <option value="17">오후05시</option>
+                            <option value="18">오후06시</option>
+                            <option value="19">오후07시</option>
+                            <option value="20">오후08시</option>
+                            <option value="21">오후09시</option>
+                        </select>
+                        <select name="time2">
+                            <option value="00">00분</option>
+                            <option value="05">05분</option>
+                            <option value="10">10분</option>
+                            <option value="15">15분</option>
+                            <option value="20">20분</option>
+                            <option value="25">25분</option>
+                            <option value="30">30분</option>
+                            <option value="35">35분</option>
+                            <option value="40">40분</option>
+                            <option value="45">45분</option>
+                            <option value="50">50분</option>
+                            <option value="55">55분</option>
+                        </select>
+                         ~ 
+                        <select name="time3">
+                            <option value="09" selected>오전09시</option>
+                            <option value="10">오전10시</option>
+                            <option value="11">오전11시</option>
+                            <option value="12">오전12시</option>
+                            <option value="13">오후01시</option>
+                            <option value="14">오후02시</option>
+                            <option value="15">오후03시</option>
+                            <option value="16">오후04시</option>
+                            <option value="17">오후05시</option>
+                            <option value="18">오후06시</option>
+                            <option value="19">오후07시</option>
+                            <option value="20">오후08시</option>
+                            <option value="21">오후09시</option>
+                        </select>
+                        <select name="time4">
+                            <option value="00">00분</option>
+                            <option value="05">05분</option>
+                            <option value="10">10분</option>
+                            <option value="15">15분</option>
+                            <option value="20">20분</option>
+                            <option value="25">25분</option>
+                            <option value="30">30분</option>
+                            <option value="35">35분</option>
+                            <option value="40">40분</option>
+                            <option value="45">45분</option>
+                            <option value="50">50분</option>
+                            <option value="55">55분</option>
+                        </select>
+                        <br>
+                        
+                        <label for="ToDo">일정</label>
+                        <input type="text" name="todo" id="ToDo" required="required">
+                        <br>
+                        
+                        <button type="submit">등록</button>
+                    </form>
+                    </ul>
+                </fieldset>         
+    </section>        
+
+
+    <footer>
+        <p>ⓒ Team-Kingple</p>
+    </footer>
+</body>
+</html>

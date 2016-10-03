@@ -1,0 +1,48 @@
+<?php
+    session_start();
+
+    $connect = mysqli_connect('54.65.221.83','root','1234','project') or die('Error connecting to MySQL server');
+    $commentNum = $_GET[commentNum];
+    $projectNum = $_GET[projectNum];
+    
+?>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>댓글 수정하기</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta http-equiv="refresh" content="6000; url=logout.php"> 
+    
+    <?php include("\login_ing.php"); ?>
+
+</head>
+
+<body>
+    <header>
+        <h1>댓글 수정하기</h1>
+    </header>
+
+    <section>
+        <form method = "post" action="comment_edit.php">
+            <?php
+                $sql3 = "select comment from comment where commentNum='$commentNum'";// SQL 쿼리문
+                $result3=mysqli_query($connect, $sql3) or die ('error333');
+                $row3= mysqli_fetch_array($result3);
+            ?>
+            <textarea id ="commentContent" name="newcomment"><?php echo $row3['comment']; ?></textarea>
+            <input type="hidden" name="commentNum" value="<?php echo $commentNum; ?>">
+            <input type="hidden" name="projectNum" value="<?php echo $projectNum; ?>">
+            <button type="submit">수정</button>
+        </form>
+                    
+    </section>        
+
+
+    <footer>
+        <p>ⓒ Team-Kingple</p>
+    </footer>
+</body>
+</html>

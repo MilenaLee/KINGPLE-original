@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title>차례</title>
+</head>
+<body>
+	<header>
+        <form method ="get" action="logout.php">
+            <a href="main.html" target="_top"><h1>KINGPLE</h1></a>
+            <nav>
+                <p>
+                    <?php
+                    session_start();
+                    echo $_SESSION["sessionName"];
+                    ?>
+                    님 환영합니다</p>
+                    <button type="button" onclick="location='message3.php'">쪽지</button>
+                    <button type="button" onclick="location='mypage.html'">마이페이지</button>
+                    <button type="button" onclick="location='logout.php'">로그아웃</button>
+            </nav>
+        </form>
+    </header>
+	<ul>
+	 <a href="message_receive.html" target="right"><li>받은 메시지</li></a>
+	 <a href="message_send.html" target="right"><li>보낸 메시지</li></a>
+	 <a href="message_write.html" target="right"><li>쪽지 보내기</li></a>
+	</ul>
+</body>
+</html>	 	

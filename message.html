@@ -1,0 +1,154 @@
+<!DOCTYPE php>
+<?php
+    session_start();
+    if(!isset($_SESSION["sessionName"]))
+    {
+        echo '<script>window.alert("로그인이 필요합니다");</script>';
+        echo("<script>location.href='login.html';</script>");
+        exit;
+    }
+?>
+
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>킹플 쪽지</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <?php include("\login_ing.php"); ?>
+
+    <script type="text/javascript">
+<!--
+    function change1(){
+        document.body.children.div1.style.display="";
+        document.body.children.div2.style.display="none";
+        document.body.children.div3.style.display="none";
+    }
+    function change2(){
+        document.body.children.div1.style.display="none";
+        document.body.children.div2.style.display="";
+        document.body.children.div3.style.display="none";
+    }
+    function change3(){
+        document.body.children.div1.style.display="none";
+        document.body.children.div2.style.display="none";
+        document.body.children.div3.style.display="";    
+    }
+//-->
+ </script>
+
+</head>
+
+<body>
+      <header>
+        <form method ="get" action="logout.php">
+    <h1>KINGPLE</h1>
+    <nav>
+    <p>
+    <?php 
+    echo $_SESSION["sessionName"];
+    ?>
+    님 환영합니다</p>
+        <button type="button" onclick="location='message.html'">쪽지</button>
+        <button type="button" onclick="location='mypage.html'">마이페이지</button>
+        <button type="submit">로그아웃</button>
+        <a href="message2.php">메시지테스트중</a>
+    </nav>
+
+</form>
+    </header> 
+
+    <section name="select1" id="message_btn">
+            <input type="button" name="1" value="받은쪽지함" onclick="change1()"><br>
+            <input type="button" name="1" value="보낸쪽지함" onclick="change2()"><br>
+            <input type="button" name="1" value="쪽지보내기" onclick="change3()"><br>
+    </section>
+
+    <div id="div1" >
+        <legend>받은쪽지함</legend>
+        <?php
+        $id=$_SESSION["sessionId"];
+        $connect = mysqli_connect('54.65.221.83','root','1234','project') or die('Error connecting to MySQL server');
+        $sql = "select * from message where rcv_id='$id' order by date_time desc";
+        $result = mysqli_query($connect,$sql) or die ('Error querying database1');
+
+          
+
+        while( $data = mysqli_fetch_array($result)){
+                echo $data['0'];
+                echo " ";
+                echo $data['1'];
+                echo " ";
+                echo $data['2'];
+                echo " ";
+                echo $data['3'];
+                echo " ";
+            echo "<br />\n";    
+        }
+        ?>
+    </div>
+
+    <div id="div2" style="display:none;">
+        <legend>보낸쪽지함</legend>
+        <?php
+        $id=$_SESSION["sessionId"];
+        $connect = mysqli_connect('54.65.221.83','root','1234','project') or die('Error connecting to MySQL server');
+        $sql = "select * from message where send_id='$id' order by date_time desc";
+        $result = mysqli_query($connect,$sql) or die ('Error querying database1');
+        while( $data = mysqli_fetch_array($result)){
+                echo $data['0'];
+                echo " ";
+                echo $data['1'];
+                echo " ";
+                echo $data['2'];
+                echo " ";
+                echo $data['3'];
+                echo " ";
+            echo "<br />\n"; 
+        }
+        ?>
+    </div>
+
+    <div id="div3" style="display:none;">
+        <form method="post" name="send_message" action="message.php">
+            <h2>쪽지보내기</h2>
+            <ul>
+                <li>
+                    <label for="receivedId">To</label>
+                    <input type="text" name="receivedId" required="required">
+                </li>
+                <li>
+                    <textarea name="message_content" cols="30" rows="10" placeholder="내용을 입력하세요."></textarea>
+                </li>
+                <button type="submit">쪽지보내기</button>
+        </form>
+    </div>
+
+
+
+    
+
+   <!-- <section id="received_message" >
+    <form method="post" name="received_message" action="message.php">
+        <h2>받은쪽지</h2>
+        <ul>
+            <li>
+                <label for="sendId">From</label>
+                <input type="text" id="sendId">
+            </li>
+            <li>
+                <textarea id="message_content" cols="30" rows="10"></textarea>
+            </li>
+            <button type="submit">수락</button>
+            <button type="submit">확인</button>
+        </form>
+    </section> -->
+
+
+
+    <footer>
+        <p>ⓒ Team-Kingple</p>
+    </footer>
+
+</body>
+</html>

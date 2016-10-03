@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<?php
+    session_start();
+
+    if(!isset($_SESSION["sessionName"]))
+    {
+        echo '<script>window.alert("로그인이 필요합니다");</script>';
+        echo("<script>location.href='login.html';</script>");
+        exit;
+    }
+
+    $projectNum=$_GET[id];
+    
+    $connect = mysqli_connect('54.65.221.83', 'root', '1234', 'project');
+   	/*$sql2 = "select * from board where projectNum = '$projectNum' order by created desc";// SQL 쿼리문
+	$result2=mysqli_query($connect, $sql2) or die ('error');*/
+
+   	
+
+?>
+
+
+<script language = "javascript">
+	
+	//document.getElementById("commentContent").readOnly = "";	일단 수정하는거
+	function Limit(obj)
+	{
+		var maxLength = parseInt(obj.getAttribute("maxlength"));
+		if(obj.value.length > maxLength)
+		{
+			alert("내용은 2000자를 초과할 수 없습니다. 초과된 내용은 삭제됩니다.");
+			obj.value = obj.value.substring(0,maxLength);
+			return;
+		}
+	}
+
+	
+	
+</script>
+
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>킹플 프로젝트</title>
+
+    <?php
+    $query="select count(*) from board where projectNum = '$projectNum'"; // SQL 쿼리문을 문자열 변수에 일단 저장하고
+	$result=mysqli_query($connect, $query) or die (mysql_error()); // 위의 쿼리문을 실제로 실행하여 결과를 result에 저장한 다음
+	$row=mysqli_fetch_row($result); //위 결과 값을 하나하나 배열로 저장합니다.
+	$total_no=$row[0]; //배열의 첫번째 요소의 값, 즉 테이블의 전체 글 수를 저장합니다.
+	$list_num = 5; // 한 번에 보일 글 개수. 수정시 Board.html에 있는 list_num도 수정할것
+	$total_page=ceil($total_no/$list_num); // 전체글수를 페이지당글수로 나눈 값의 올림 값을 구합니다.
+	?>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="test/app.js"></script>
+    <script type="text/javascript">
+    var para = document.location.href.split("?");	
+	var page = 2; // 스크롤을 내릴 시 나오는 페이지 번호 변수
+		
+     var flag = <?=$total_page ?>;
+$(window).scroll(function() {
+   if ($(window).scrollTop() >= $(document).height() - $(window).height()) { // 맨 아래까지 스크롤을 내릴 경우
+
+   	flag--;
+   	 	//scrollCurrentTop = $(window).scrollTop(); 그전 소스들
+   	 	//$('#boardWrite').append($('#boardWrite'));
+	if(flag > 0)
+	{
+		var newDiv=document.createElement('div'); //새로운 div 공간을 만듬 
+		newDiv.setAttribute('id','more'+page); // 그 div 공간의 id는(이름은) more + 불러오는 page Number (2페이지면 div id = more2)
+
+		var address ='Board.html?pageNo='+page+'&pageNum='+<?=$projectNum ?>; // 불러올 주소(스크롤을 내릴시 나오는 다음 페이지 주소)
+		jQuery(newDiv).insertBefore('#post_wrap'); // 불러온 페이지 위치 지정(div id = post_wrap인 곳에 위쪽 )
+		$("#more"+page).load(address); // 실질적으로 페이지를 불러오는 역할(div id = more2인 곳에 address 변수 안에 들어간 주소 호출)
+		page++; // 페이지 변수값 증가 
+	}
+
+    }
+
+
+});
+
+</script>
+		
+</head>
+
+<body>
+
+	<header>
+		<a href="main.html"><h1>KINGPLE</h1></a>
+                         <nav>
+    <p>
+    <?php 
+    echo $_SESSION["sessionName"];
+    ?>
+    님 환영합니다</p>
+        <button type="button" onclick="location='message3.php'">쪽지</button>
+        <button type="button" onclick="location='intoMypage.html'">마이페이지</button>
+        <button type="submit">로그아웃</button>
+    </nav>
+	</header>
+
+	<div class="timetable">
+            <div class="timetable_content">
+                <?php include("showTableProject.php"); ?>
+            </div>
+        </div>
+	<section id="board">
+		
+		<!-- http://www.ezphp.net/lecture/-->
+		<div class="container">
+		<form name = "board" id = "board" method="post" action="project.php" enctype="multipart/form-data">
+			
+				<div id="board_title">
+					<h2>게시판</h2><span class="total_posts"></span>
+				</div>
+
+				<div id="form-group">
+					<textarea id="contents" name = "contents" cols="30" rows="10" placeholder="팀플은 킹플!"  maxlength="2000" onblur="Limit(this)" ></textarea>
+					<!--<input type = "text" name = "contents">-->
+					<input type="hidden" name="projectNum" value="<?php echo $projectNum; ?>">
+				</div>
+
+
+				<div id="writing_box_under">
+					<div id="add_materials">
+			    			<input type="file" name="file" id="file">
+					</div>
+
+				
+
+					<div class="button-group pull_right" id="writing_box_button">
+				        	<h5 class="counter">2000</h5>			        	
+				        	
+
+				        	<button type="reset" class="form_cancel">작성 취소</button>
+				        	<button type="submit" class="btn btn-primary">게시</button>
+					</div>
+				</div>
+		</form>
+
+				<div id ="boardWrite"> <!--게시물 보이는 부분-->
+
+					<?php include("Board.html"); ?> <!-- 게시글 나타내는 부분 include -->
+                	
+           
+				</div>
+			
+		</div>
+
+		<div id="post_wrap">
+			<ul class="posts">
+			</ul>
+		</div>
+		
+	</section>
+
+	<section class="schedule">
+         <script language='JavaScript'>
+        document.write('<st'+'yle>');
+        document.write('td {font-size:12px; font-family:굴림; text-decoration:none; }');
+        document.write('A:link,A:active,A:visited{text-decoration:none;font-size:12PX;color:#333333;}');
+        document.write('A:hover {text-decoration:none; color:ff9900}');
+        document.write('font { font-size: 9pt; }');
+        document.write('.cnj_input {position:relative;}');
+        document.write('.cnj_input2 {border-width:1; border-color:rgb(204,204,204); border-style:solid;}');
+        document.write('.cnj_input3 { border-width:1; border-style:solid; border-color:#000000; color:#0084D4; background-color:white;text-align:right;}');
+        document.write('.cnj_input4 { scrollbar-face-color: #FFCC33;scrollbar-shadow-color: #ffffff;scrollbar-highlight-color: #F3f3f3;scrollbar-3dlight-color: #ffffff;scrollbar-darkshadow-color: #F3f3f3;scrollbar-track-color: #ffffff;scrollbar-arrow-color: #f9f9f9; }');
+        document.write('</st'+'yle>');
+
+        var monthName=new Array("1월","2월","3월","4월","5월","6월","7월",
+        "8월","9월","10월","11월","12월")
+        /*
+        var monthName=new Array("January","February","March","April","May","June","July",
+        "August","September","October","November","December")
+        */
+        var monthDays=new Array(31,28,31,30,31,30,31,31,30,31,30,31)
+        var now=new Date
+        var nowd=now.getDate()
+        var nowm=now.getMonth()
+        var nowy=now.getYear()
+
+        function showCalendar(day,month,year) {
+
+            if ((year%4==0||year%100==0)&&(year%400==0)) monthDays[1]=29; else monthDays[1]=28 //leap year test
+            var firstDay=new Date(year,month,1).getDay()
+            var cnj_str="<table border=0 cellpadding=5 cellspacing=1 bgcolor=#CCCCCC>"
+
+            cnj_str+="<tr bgcolor=white><td colspan=7>"
+            cnj_str+="<table border=0 cellpadding=0 cellspacing=0 align=center width=100%>"
+            cnj_str+="<td><a href='javascript:;' onClick='nowm--; if (nowm<0) { nowy--; nowm=11; } showCalendar(nowd,nowm,nowy)' title='이전 월'> <<</a></td>"
+            if(year<=200)
+                    {
+                            year += 1900;
+                    }
+            cnj_str+="<td align=center>"+monthName[month].toUpperCase()+" "+year+"년</td>"
+            cnj_str+="<td align=right><a href='javascript:;' onClick='nowm++; if (nowm>11) { nowy++; nowm=0; } showCalendar(nowd,nowm,nowy)' title='다음 월'> >></a></td>"
+            cnj_str+="</tr></table>"
+            cnj_str+="</td></tr>"
+            cnj_str+="<tr align=center bgcolor='#FFFFB9'>"
+            cnj_str+="<th><font color='red'>일</font></th>"
+            cnj_str+="<th><font color='black'>월</font></th>"
+            cnj_str+="<th><font color='black'>화</font></th>"
+            cnj_str+="<th><font color='black'>수</font></th>"
+            cnj_str+="<th><font color='black'>목</font></th>"
+            cnj_str+="<th><font color='black'>금</font></th>"
+            cnj_str+="<th><font color='blue'>토</font></th>"
+            cnj_str+="</tr>"
+
+            var dayCount=1
+            var projectNum = <?=$projectNum ?>;
+
+            cnj_str+="<tr bgcolor=white>"
+
+            for (var i=0;i<firstDay;i++) cnj_str+="<td> " //공백
+            for (var i=0;i<monthDays[month];i++) {
+            if(dayCount==nowd) {
+            cnj_str+="<td align=center bgcolor='#FFFFB9'><b>" // 오늘 날짜일때 배경색 지정,글자 진하게
+            } else {
+            cnj_str+="<td align=center>" // 오늘 날짜가 아닐때 배경색 지정
+            }
+
+            cnj_str+='<a href="month_schd.html?year='
+            cnj_str+= year
+            cnj_str+= '&month='
+            cnj_str+=month+1
+            cnj_str+= '&day='
+            cnj_str+=dayCount
+            cnj_str+='&projectNum='
+            cnj_str+=projectNum
+            cnj_str+='"onClick = "window.open(this.href, \'popupName\', \'width = 600 height = 400\'); return false">' // 링크설정
+            cnj_str+=dayCount++// 날짜
+            cnj_str+="<p>컨텐츠1"
+            cnj_str+="</a>"
+
+        
+            if(dayCount==nowd) {
+            cnj_str+="</b>" // 오늘 날짜일때 글자 진하게
+            } else {
+            cnj_str+="" // 오늘 날짜가 글자 진하게 안함
+            }
+
+            if ((i+firstDay+1)%7==0&&(dayCount<monthDays[month]+1)) cnj_str+="<tr bgcolor=white>"
+            }
+            var totCells=firstDay+monthDays[month]
+            for (var i=0;i<(totCells>28?(totCells>35?42:35):28)-totCells;i++) cnj_str+="<td> "
+            cnj_str+="</table><BR>"
+            calendar.innerHTML=cnj_str
+        }
+        </script>
+
+        <body onLoad="showCalendar(nowd,nowm,nowy)">
+        <span id="calendar" class="cnj_input"></span>
+        </script>
+    </section>
+
+
+
+
+
+    <footer>
+        <p>ⓒ Team-Kingple</p>
+    </footer>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="app.js"></script>
+
+</body>
+
+</html>
+	

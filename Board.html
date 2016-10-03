@@ -1,0 +1,115 @@
+<?php // 게시판 내용 불러오기
+$connect = mysqli_connect('54.65.221.83', 'root', '1234', 'project');
+$projectNum = isset($_GET['pageNum']) && $_GET['pageNum'] && is_numeric($_GET['pageNum']) ? $_GET['pageNum'] : $projectNum;
+//따로 전달받는 값이 없을 경우 projectNum 은 위에서 쓰던 값 그대로
+$tablename="board"; //테이블 이름
+$page = isset($_GET['pageNo']) && $_GET['pageNo'] && is_numeric($_GET['pageNo']) ? $_GET['pageNo'] : 1;
+//따로 전달받는 값이 없을 경우 페이지 변수는 1
+$list_num = 5; //한 페이지에 보여줄 목록 갯수
+
+$offset = $list_num*($page-1); //한 페이지의 시작 글 번호(listnum 수만큼 나누었을 때 시작하는 글의 번호)
+
+//전체 글 수를 구합니다. (쿼리문을 사용하여 결과를 배열로 저장하는 일반적인 방법)
+
+
+//message 테이블에서 목록을 가져옵니다. (위의 쿼리문 사용예와 비슷합니다.)
+$query="select * from $tablename where projectNum = '$projectNum' order by created desc limit $offset, $list_num "; // SQL 쿼리문
+$result2=mysqli_query($connect, $query) or die (mysql_error()); // 쿼리문을 실행 결과
+//쿼리 결과를 하나씩 불러와 실제 HTML에 나타내는 것은 HTML 문 중간에 삽입합니다.
+
+
+?>
+
+<html lang = "ko">
+<head>
+     <meta charset="utf-8"> 
+
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"> 
+ 
+
+   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.js"></script> 
+   <script type="text/javascript">
+function showmap() { 
+ if(document.all.spot.style.visibility=="hidden") {
+   document.all.spot.style.visibility="visible";
+   return false;
+ }
+ if(document.all.spot.style.visibility=="visible") {
+  document.all.spot.style.visibility="hidden";
+  return false;
+ }
+}
+</script>
+
+
+</head> 
+<body>
+   
+
+<form method="post" action="delBoard.php">
+						<input type="hidden" name="projectNum" value="<?php echo $projectNum; ?>">
+					
+					<br>
+					
+						<?php
+
+                    while($row2= mysqli_fetch_array($result2))
+                    {
+                    	$boardNum=$row2['boardNum'];
+                    	?>
+                		<input type="checkbox" name="boardnum[]" value="<?=$boardnum?>">
+                		<input type = "text" value = "<?php echo $row2['name']; ?>" readonly><br>	    
+                        <textarea readonly> <?php echo $row2['contents']; ?></textarea>   <br>
+                    <?php
+                    	
+                    	if($row2['fileName'])
+                    	{
+                    		echo '<a href=download.php?filename=';
+                    		echo $row2['fileName'];
+                    		echo ">";
+                    		echo '<input type = "text" value =';
+                    		echo $row2['fileName'];
+                    		echo ' readonly>';
+                    		echo '</a><br>';
+                    	}
+                    	else
+                    	{?>
+                    		<input type = "text" value = "<?php echo $row2['fileName']; ?>" readonly><br>
+                    		<?php	
+                    	}
+                    	?>
+                    </form>
+                    <form method="post" action="comment.php">
+                    	<input type = "text" name="comment"><button type="submit" name="comment_btn">등록</button><br>
+                    	<input type="hidden" name="boardNum" value="<?php echo $boardNum; ?>">
+                    	<input type="hidden" name="projectNum" value="<?php echo $projectNum; ?>">
+                    </form>
+
+                    	<?php  
+                    	$sql3 = "select comment.comment, comment.created, comment.commentNum, member.name from comment join board using(boardNum), member where comment.boardNum='$boardNum' and comment.id=member.id order by created";// SQL 쿼리문
+						$result3=mysqli_query($connect, $sql3) or die ('error333');
+
+                    while($row3= mysqli_fetch_array($result3))
+                    {
+                    	$commentNum=$row3['commentNum'];
+                    	?>
+                        <form method="post" action="del_comment.php">
+                        	<input type = "text" value = "<?php echo $row3['name']; ?>" readOnly>	    
+                            <textarea id = "commentContent" readOnly><?php echo $row3['comment']; ?></textarea>
+                            <input type = "text" value = "<?php echo $row3['created']; ?>" readonly>
+                            <input type="hidden" name="commentNum" value="<?php echo $commentNum; ?>">
+                            <input type="hidden" name="projectNum" value="<?php echo $projectNum; ?>">
+                            <button type= "submit" name="btn_type" value="1">삭제</button>
+                            <button type= "submit" name="btn_type" value="2">수정</button>
+                            <br>
+                        </form>
+                    <?php
+                    }  
+                    }
+                	   
+                    mysqli_close($connect); 
+
+                ?>
+
+            </body>
+            </html>

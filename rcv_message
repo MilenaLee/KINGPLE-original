@@ -1,0 +1,18 @@
+<?php
+session_start();
+
+$id=$_SESSION["sessionId"];
+$connect = mysqli_connect('54.65.221.83','root','1234','project') or die('Error connecting to MySQL server');
+$sql = "select * from message where rcv_id='$id' order by date_time desc";
+$result = mysqli_query($connect,$sql) or die ('Error querying database1');
+echo "1";
+while( $data = mysqli_fetch_array($result)){
+        echo $data[0];
+        echo $data[1];
+        echo $data[2];
+        echo $data[3];
+        echo " ";
+    }
+    echo "<br />\n";	
+}
+?>

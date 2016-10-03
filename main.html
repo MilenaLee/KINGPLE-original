@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<?php
+    session_start();
+    if(!isset($_SESSION["sessionName"]))
+    {
+        echo '<script>window.alert("로그인이 필요합니다");</script>';
+        echo("<script>location.href='login.html';</script>");
+        exit;
+    }
+
+     $connect = mysqli_connect('54.65.221.83','root','1234', 'project') or die('Error connecting to MySQL server');
+     $id = $_SESSION["sessionId"];
+     $sql = "select * from projectAdd where teamLeader = '$id' or teamMember1 = '$id' or teamMember2 = '$id' or teamMember3 = '$id' or teamMember4 = '$id' or teamMember5 = '$id' or teamMember6 = '$id' or teamMember7 = '$id' or teamMember8 = '$id' or teamMember9 = '$id'";
+     $result = mysqli_query($connect, $sql) or die('Error querying database');
+?>
+
+
+
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>킹플메인</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta http-equiv="refresh" content="6000; url=logout.php"> 
+    
+    <?php include("\login_ing.php"); ?>
+    
+ 
+</head>
+
+<body>
+   
+    <header>
+        <form method ="get" action="logout.php">
+    <a href="main.html"><h1>KINGPLE</h1></a>
+    <nav>
+    <p>
+    <?php 
+    echo $_SESSION["sessionName"];
+    ?>
+    님 환영합니다</p>
+        <button type="button" onclick="location='message3.php'">쪽지</button>
+        <button type="button" onclick="location='intoMypage.html'">마이페이지</button>
+        <button type="submit">로그아웃</button>
+    </nav>
+
+</form>
+    </header>
+    
+
+   
+    <section id="list">
+        <div class="project_add_btn">
+            <button type="button" onclick="location='project_add.html'">프로젝트 추가</button>
+            <div class="today_todo">
+            <h2>오늘의 팀플/할일</h2>
+            <ul>
+                <ol>킹플 프로젝트</ol>
+                <ol>방학숙제</ol>
+                <ol>새나라의 어린이</ol>
+            </ul>
+        </div>
+        <div class="teamproject_list">
+            <h2>현재 진행중인 프로젝트 리스트</h2>
+            <ul>
+                <?php
+
+                    while($row= mysqli_fetch_array($result))
+                    {
+                        
+                        
+
+                        echo "
+                    <li>
+                        <a href=\"project.html?id={$row['num']}\">{$row['projectName']}</a></li>";
+
+                        
+                    }
+
+                   
+                    mysqli_close($connect); 
+
+                ?>
+            </ul>
+        </div>
+    </section>
+
+    <section id="timetable">
+        <div class="timetable_nav" action="send.php">
+            <button type="button" onclick="location='timetable.html'">시간표관리</button>
+        </div >
+        <div class="timetable">
+            <div class="timetable_content">
+                <?php include("showTable.php"); ?>
+            </div>
+        </div>
+    </section>
+
+   <nav>
+    <section class="schedule">
+         <script language='JavaScript'>
+        document.write('<st'+'yle>');
+        document.write('td {font-size:12px; font-family:굴림; text-decoration:none; }');
+        document.write('A:link,A:active,A:visited{text-decoration:none;font-size:12PX;color:#333333;}');
+        document.write('A:hover {text-decoration:none; color:ff9900}');
+        document.write('font { font-size: 9pt; }');
+        document.write('.cnj_input {position:relative;}');
+        document.write('.cnj_input2 {border-width:1; border-color:rgb(204,204,204); border-style:solid;}');
+        document.write('.cnj_input3 { border-width:1; border-style:solid; border-color:#000000; color:#0084D4; background-color:white;text-align:right;}');
+        document.write('.cnj_input4 { scrollbar-face-color: #FFCC33;scrollbar-shadow-color: #ffffff;scrollbar-highlight-color: #F3f3f3;scrollbar-3dlight-color: #ffffff;scrollbar-darkshadow-color: #F3f3f3;scrollbar-track-color: #ffffff;scrollbar-arrow-color: #f9f9f9; }');
+        document.write('</st'+'yle>');
+
+        var monthName=new Array("1월","2월","3월","4월","5월","6월","7월",
+        "8월","9월","10월","11월","12월")
+        /*
+        var monthName=new Array("January","February","March","April","May","June","July",
+        "August","September","October","November","December")
+        */
+        var monthDays=new Array(31,28,31,30,31,30,31,31,30,31,30,31)
+        var now=new Date
+        var nowd=now.getDate()
+        var nowm=now.getMonth()
+        var nowy=now.getYear()
+
+        function showCalendar(day,month,year) {
+
+            if ((year%4==0||year%100==0)&&(year%400==0)) monthDays[1]=29; else monthDays[1]=28 //leap year test
+            var firstDay=new Date(year,month,1).getDay()
+            var cnj_str="<table border=0 cellpadding=5 cellspacing=1 bgcolor=#CCCCCC>"
+
+            cnj_str+="<tr bgcolor=white><td colspan=7>"
+            cnj_str+="<table border=0 cellpadding=0 cellspacing=0 align=center width=100%>"
+            cnj_str+="<td><a href='javascript:;' onClick='nowm--; if (nowm<0) { nowy--; nowm=11; } showCalendar(nowd,nowm,nowy)' title='이전 월'> <<</a></td>"
+            if(year<=200)
+                    {
+                            year += 1900;
+                    }
+            cnj_str+="<td align=center>"+monthName[month].toUpperCase()+" "+year+"년</td>"
+            cnj_str+="<td align=right><a href='javascript:;' onClick='nowm++; if (nowm>11) { nowy++; nowm=0; } showCalendar(nowd,nowm,nowy)' title='다음 월'> >></a></td>"
+            cnj_str+="</tr></table>"
+            cnj_str+="</td></tr>"
+            cnj_str+="<tr align=center bgcolor='#FFFFB9'>"
+            cnj_str+="<th><font color='red'>일</font></th>"
+            cnj_str+="<th><font color='black'>월</font></th>"
+            cnj_str+="<th><font color='black'>화</font></th>"
+            cnj_str+="<th><font color='black'>수</font></th>"
+            cnj_str+="<th><font color='black'>목</font></th>"
+            cnj_str+="<th><font color='black'>금</font></th>"
+            cnj_str+="<th><font color='blue'>토</font></th>"
+            cnj_str+="</tr>"
+
+            var dayCount=1
+
+            cnj_str+="<tr bgcolor=white>"
+
+            for (var i=0;i<firstDay;i++) cnj_str+="<td> " //공백
+            for (var i=0;i<monthDays[month];i++) {
+            if(dayCount==nowd) {
+            cnj_str+="<td align=center bgcolor='#FFFFB9'><b>" // 오늘 날짜일때 배경색 지정,글자 진하게
+            } else {
+            cnj_str+="<td align=center>" // 오늘 날짜가 아닐때 배경색 지정
+            }
+
+            cnj_str+='<a href="month_schd.html?year='
+            cnj_str+= year
+            cnj_str+= '&month='
+            cnj_str+=month+1
+            cnj_str+= '&day='
+            cnj_str+=dayCount
+            cnj_str+='"onClick = "window.open(this.href, \'popupName\', \'width = 600 height = 400\'); return false">' // 링크설정
+            cnj_str+=dayCount++ // 날짜
+            cnj_str+="</a>"
+
+        
+            if(dayCount==nowd) {
+            cnj_str+="</b>" // 오늘 날짜일때 글자 진하게
+            } else {
+            cnj_str+="" // 오늘 날짜가 글자 진하게 안함
+            }
+
+            if ((i+firstDay+1)%7==0&&(dayCount<monthDays[month]+1)) cnj_str+="<tr bgcolor=white>"
+            }
+            var totCells=firstDay+monthDays[month]
+            for (var i=0;i<(totCells>28?(totCells>35?42:35):28)-totCells;i++) cnj_str+="<td> "
+            cnj_str+="</table><BR>"
+            calendar.innerHTML=cnj_str
+        }
+        </script>
+
+        <body onLoad="showCalendar(nowd,nowm,nowy)">
+        <span id="calendar" class="cnj_input"></span>
+        </script>
+    </section>
+
+
+
+   </nav>
+
+
+    <footer>
+        <p>ⓒ Team-Kingple</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+    <!DOCTYPE html>
+     
+    <html lang="ko">
+    <head>
+        <meta charset="utf-8">
+        <title>킹플프로젝트 추가</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+        <script language="javascript">      // 조원 추가
+
+            var num = 1; 
+            var i;
+            var memberID;
+
+            //조원 추가하는 함수
+            function append (key) 
+            { 
+                var tbl = document.getElementById("actTable").children[0]; 
+               
+    
+                
+                switch(key)
+                {
+                    case 1: 
+                    {
+                        if(num<9)
+                        { 
+                            memberID = document.getElementById("memberId").value;
+                            var row = document.createElement("tr"); 
+                            var col = document.createElement("td");                         
+                            row.appendChild(col);
+                            //처음 추가하는 조원의 경우
+                            if(num == 1)
+                            {
+                                col.innerHTML = "<input type=text name= memberId" + (num) + " " + "id = memberId" + (num) + " value =  " + (memberID) + " readonly " + ">"; 
+                                tbl.appendChild(row);
+                            }
+                            //나머지 조원의 경우    
+                            else
+                            {
+                                if(check())
+                                {
+                                    col.innerHTML = "<input type=text name= memberId" + (num) + " " + "id = memberId" + (num) + " value =  " + (memberID) + " readonly" + ">"; 
+                                    tbl.appendChild(row);
+
+                                }
+                                else
+                                {
+                                    alert("이미 존재하는 아이디입니다.");
+                                    num--;
+                                }    
+                            } 
+                               
+
+                            num++;
+                            
+
+                            document.getElementById("memberId").value = "";
+
+                        }
+
+                    }
+                    break;
+
+                    case 0: 
+                    {
+                        if(num >1) 
+                        { 
+                                if (tbl.hasChildNodes())
+                                { 
+                                    tbl.removeChild(tbl.lastChild);
+                                    --num; 
+                                }
+                        }
+                    }
+                    break;
+                }
+            
+            }
+
+                //아이디 중복 검사
+                var check = function()
+                {
+                    var i;
+
+                    for(i = 1 ; i < num ; i++)
+                    {
+                        if(memberID === document.getElementById("memberId" + (i)).value)
+                          break;
+                    }
+                    if(i == num)
+                        return true;
+                    else
+                        return false; 
+                }
+                //팝업창 띄우기
+                function oPopup ()
+                    {
+                        window.open("memberAdd.php?memberId="+document.projectadd_form.memberId.value, "memberAdd", "scrollbars=no, resizable=1, width=300, height = 100,  top=0, left=0");
+
+                    }
+
+        </script> 
+    </head>
+
+    <body>
+        <header>
+        <a href="main.html"><h1>KINGPLE</h1></a>
+        <nav>
+            <button type="button" onclick="location='message3.php'">쪽지</button>
+            <button type="button" onclick="location='mypage.html'">마이페이지</button>
+            <button type="button" onclick="location='logout.php'">로그아웃</button>
+        </nav>
+        </header>  
+
+        <section id="project_add">
+        <h2>프로젝트 추가</h2>
+            <form action="project_add.php" name="projectadd_form" method = "post">
+                <button type="submit">등록</button>
+                <ul>
+                    <li>
+                        <label for="projectName">프로젝트명</label>
+                        <input type="text" id="projectName" name = "projectName" autofocus="autofocus" required="required">
+                    </li>
+                    <li>
+                        
+                        <label for="memberId">조원</label><br>
+                        <input type="text" name = "memberId" id="memberId">
+                        
+                        <!--여기서부터 조원 추가-->
+                        <input type= button onclick="oPopup()" value = "추가">
+                        <input type= button onclick="append(0)" value = "삭제">
+                        <br>
+                        <!--<input type="text" name = "memberId1" id="memberId1" value ="abc123"><br>
+                        <input type="text" name = "memberId2" id="memberId2"><br>
+                        <input type="text" name = "memberId3" id="memberId3">-->
+                        
+                        <table name = "actTable" id="actTable"> 
+                            <tr>
+                            <!--<td><input type="text" name = "memberId1" id="memberId1" value = "abc123"></td>-->
+                            </tr> 
+                        </table>
+                        <!--여기까지 조원 추가-->                                             
+                    </li>           
+                    <li>
+                        <label for="period">프로젝트 기간</label>
+                        <input type="date" name = "period" id="period" required="required">~<input type="date" name = "period2" id="period2" required="required">
+                    </li>
+                </ul>
+                </form>
+        </section>           
+
+        <footer>
+            <p>ⓒ Team-Kingple</p>
+        </footer>
+
+    </body>
+    </html>
